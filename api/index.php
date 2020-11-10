@@ -63,8 +63,8 @@ switch ($_GET['action']) {
     case 'updateCard':
         updateCard();
         break;
-    case 'getGoogleAuthLink':
-        PHPGoogle::getLinkToGetAuthorCode(array('https://www.googleapis.com/auth/userinfo.profile'));
+    case 'loginGoogle':
+        loginGoogle();
         break;
     default:
         notFound();
@@ -84,6 +84,33 @@ function login()
                 'user_id' => $user['id']
             ));
         }
+    }
+    responseJson(array(
+        'success' => 0
+    ));
+}
+
+function loginGoogle()
+{
+    global $db;
+    $res = $db->query("select * from users where username='{$_POST['username']}'")->fetchAll();
+    if (count($res) > 0) {
+        $user = $res[0];
+        responseJson(array(
+            'success' => 1,
+            'token' => getToken($user),
+            'user_id' => $user['id']
+        ));
+    }else{
+        $db->query("insert into users(username,hash_pass, email, first_name, last_name)
+                values( '{$_POST['username']}', '', '{$_POST['email']}', '{$_POST['first_name']}', '{$_POST['last_name']}' )");
+        $res = $db->query("select * from users where username='{$_POST['username']}'")->fetchAll();
+        $user = $res[0];
+        responseJson(array(
+            'success' => 1,
+            'token' => getToken($user),
+            'user_id' => $user['id']
+        ));
     }
     responseJson(array(
         'success' => 0
