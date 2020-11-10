@@ -10,7 +10,7 @@ $db = new db($config['db']['host'], $config['db']['user'], $config['db']['pass']
 /**
  * check user had login, if login api will send include token
  */
-if (!in_array($_GET['action'], array('login', 'signup','loginGoogle'))) {
+if (!in_array($_GET['action'], array('login', 'signup','loginGoogle', 'loginFacbook'))) {
     if (empty($_POST['token']) || decodeToken($_POST['token']) === false) {
         responseJson(array('success' => 0, 'message' => 'invalid token'));
     }
@@ -63,6 +63,7 @@ switch ($_GET['action']) {
         updateCard();
         break;
     case 'loginGoogle':
+    case 'loginFacebook':
         loginGoogle();
         break;
     default:
@@ -116,6 +117,8 @@ function loginGoogle()
         'success' => 0
     ));
 }
+
+
 
 function notFound()
 {
