@@ -11,7 +11,7 @@ $db = new db($config['db']['host'], $config['db']['user'], $config['db']['pass']
 /**
  * check user had login, if login api will send include token
  */
-if (!in_array($_GET['action'], array('login', 'signup'))) {
+if (!in_array($_GET['action'], array('login', 'signup','loginGoogle'))) {
     if (empty($_POST['token']) || decodeToken($_POST['token']) === false) {
         responseJson(array('success' => 0, 'message' => 'invalid token'));
     }
@@ -101,9 +101,10 @@ function loginGoogle()
             'token' => getToken($user),
             'user_id' => $user['id']
         ));
-    }else{
+    } else {
+        $pass = md5('123456');
         $db->query("insert into users(username,hash_pass, email, first_name, last_name)
-                values( '{$_POST['username']}', '', '{$_POST['email']}', '{$_POST['first_name']}', '{$_POST['last_name']}' )");
+                                values( '{$_POST['username']}', '{$pass}', '{$_POST['email']}', '{$_POST['first_name']}', '{$_POST['last_name']}' )");
         $res = $db->query("select * from users where username='{$_POST['username']}'")->fetchAll();
         $user = $res[0];
         responseJson(array(
